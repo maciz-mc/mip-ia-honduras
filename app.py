@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
+import altair as alt
 import re
 
 # ==========================================
@@ -15,7 +16,6 @@ st.set_page_config(
 # ==========================================
 ruta_csv = "data/mip_honduras_2013.csv"
 
-
 @st.cache_data
 def cargar_datos(ruta):
     """Carga la matriz de coeficientes técnicos desde el CSV,
@@ -23,7 +23,6 @@ def cargar_datos(ruta):
     """
     df = pd.read_csv(ruta, index_col=0)
     return df
-
 
 # Manejo de excepciones en caso de que el archivo no exista
 try:
@@ -53,7 +52,7 @@ valores_no_finitos = np.isinf(matriz_numerica.to_numpy()).sum()
 if valores_nulos > 0 or valores_no_finitos > 0:
     st.error(
         "❌ **Error de datos:** La matriz contiene valores no numéricos,"
-        f" faltantes ({valores_nulos}) o infinitos ({valores_no_finitos})."
+        f" faltantes ({valores_nulos}) o infinitas ({valores_no_finitos})."
     )
     st.stop()
 
@@ -122,7 +121,12 @@ with tab1:
             "Coeficiente Técnico (a_ij)": top_10_prov.values
         })
         df_top10_prov.index = range(1, len(df_top10_prov) + 1)
-        st.dataframe(df_top10_prov, width="stretch")
+        
+        # Mostrar con formato estilizado a 6 decimales
+        st.dataframe(
+            df_top10_prov.style.format({"Coeficiente Técnico (a_ij)": "{:.6f}"}),
+            width="stretch"
+        )
 
         # Botón para descargar resultados completos en CSV con nombre seguro
         df_completo_prov = pd.DataFrame({
@@ -140,12 +144,26 @@ with tab1:
 
     with col2:
         st.subheader("📉 Representación Gráfica")
-        # Invertir el orden para que la barra más larga (mayor coeficiente) aparezca arriba en st.bar_chart
-        st.bar_chart(top_10_prov.iloc[::-1], horizontal=True)
+        # Preparar datos para el gráfico de Altair
+        chart_data_prov = pd.DataFrame({
+            "Sector": top_10_prov.index,
+            "Coeficiente Técnico": top_10_prov.values
+        })
+        
+        # Gráfico horizontal interactivo con orden descendente exacto, límites de etiqueta y tooltips completos
+        grafico_prov = alt.Chart(chart_data_prov).mark_bar().encode(
+            x=alt.X('Coeficiente Técnico:Q', title='Coeficiente Técnico (a_ij)'),
+            y=alt.Y('Sector:N', sort='-x', title='Sector Proveedor', 
+                    axis=alt.Axis(labelLimit=250)),
+            tooltip=[alt.Tooltip('Sector:N', title='Sector Proveedor'), 
+                     alt.Tooltip('Coeficiente Técnico:Q', format='.6f', title='Coeficiente (a_ij)')]
+        ).properties(height=350).interactive()
+        
+        st.altair_chart(grafico_prov, width="stretch")
 
     st.markdown("---")
     st.subheader("💡 Resumen de Requerimientos Intermedios Compradores")
-    
+
     m1, m2 = st.columns(2)
     with m1:
         st.metric(
@@ -197,7 +215,12 @@ with tab2:
             "Coeficiente Técnico (a_ij)": top_10_clie.values
         })
         df_top10_clie.index = range(1, len(df_top10_clie) + 1)
-        st.dataframe(df_top10_clie, width="stretch")
+        
+        # Mostrar con formato estilizado a 6 decimales
+        st.dataframe(
+            df_top10_clie.style.format({"Coeficiente Técnico (a_ij)": "{:.6f}"}),
+            width="stretch"
+        )
 
         # Botón para descargar resultados completos en CSV con nombre seguro
         df_completo_clie = pd.DataFrame({
@@ -215,12 +238,26 @@ with tab2:
 
     with col4:
         st.subheader("📉 Representación Gráfica")
-        # Invertir el orden para que la barra más larga (mayor coeficiente) aparezca arriba en st.bar_chart
-        st.bar_chart(top_10_clie.iloc[::-1], horizontal=True)
+        # Preparar datos para el gráfico de Altair
+        chart_data_clie = pd.DataFrame({
+            "Sector": top_10_clie.index,
+            "Coeficiente Técnico": top_10_clie.values
+        })
+        
+        # Gráfico horizontal interactivo con orden descendente exacto, límites de etiqueta y tooltips completos
+        grafico_clie = alt.Chart(chart_data_clie).mark_bar().encode(
+            x=alt.X('Coeficiente Técnico:Q', title='Coeficiente Técnico (a_ij)'),
+            y=alt.Y('Sector:N', sort='-x', title='Sector Cliente (Comprador)', 
+                    axis=alt.Axis(labelLimit=250)),
+            tooltip=[alt.Tooltip('Sector:N', title='Sector Cliente'), 
+                     alt.Tooltip('Coeficiente Técnico:Q', format='.6f', title='Coeficiente (a_ij)')]
+        ).properties(height=350).interactive()
+        
+        st.altair_chart(grafico_clie, width="stretch")
 
     st.markdown("---")
     st.subheader("💡 Contexto y Advertencia Metodológica (Clientes)")
-    
+
     st.warning(
         "⚠️ **Interpretación económica fundamental del análisis por fila:**\n\n"
         "1. **¿Qué representan estos coeficientes?** Indican la intensidad con la que cada actividad "
