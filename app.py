@@ -153,8 +153,12 @@ with tab1:
         # Gráfico horizontal interactivo con orden descendente exacto, límites de etiqueta y tooltips completos
         grafico_prov = alt.Chart(chart_data_prov).mark_bar().encode(
             x=alt.X('Coeficiente Técnico:Q', title='Coeficiente Técnico (a_ij)'),
-            y=alt.Y('Sector:N', sort='-x', title='Sector Proveedor', 
-                    axis=alt.Axis(labelLimit=250)),
+            y=alt.Y('Sector:N', sort='-x', title=None,
+        axis=alt.Axis(
+            title=None,
+            labelLimit=350,
+            labelFontSize=12
+        )),
             tooltip=[alt.Tooltip('Sector:N', title='Sector Proveedor'), 
                      alt.Tooltip('Coeficiente Técnico:Q', format='.6f', title='Coeficiente (a_ij)')]
         ).properties(height=350).interactive()
@@ -247,8 +251,16 @@ with tab2:
         # Gráfico horizontal interactivo con orden descendente exacto, límites de etiqueta y tooltips completos
         grafico_clie = alt.Chart(chart_data_clie).mark_bar().encode(
             x=alt.X('Coeficiente Técnico:Q', title='Coeficiente Técnico (a_ij)'),
-            y=alt.Y('Sector:N', sort='-x', title='Sector Cliente (Comprador)', 
-                    axis=alt.Axis(labelLimit=250)),
+               y=alt.Y(
+        'Sector:N',
+        sort='-x',
+        title=None,
+        axis=alt.Axis(
+            title=None,
+            labelLimit=350,
+            labelFontSize=12
+        )
+    ),
             tooltip=[alt.Tooltip('Sector:N', title='Sector Cliente'), 
                      alt.Tooltip('Coeficiente Técnico:Q', format='.6f', title='Coeficiente (a_ij)')]
         ).properties(height=350).interactive()
