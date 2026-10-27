@@ -1,7 +1,7 @@
-import io
 import numpy as np
 import pandas as pd
 import streamlit as st
+import re
 
 # ==========================================
 # 1. CONFIGURACIÓN DE LA PÁGINA
@@ -68,10 +68,15 @@ if not matriz_numerica.index.equals(matriz_numerica.columns):
 # Garantizar que los cálculos posteriores utilicen la matriz validada
 matriz_db = matriz_numerica
 
+# Función para sanitizar nombres de archivos
+def limpiar_nombre_archivo(nombre):
+    sub_limpio = re.sub(r'[^a-zA-Z0-9_]', '_', nombre)
+    return re.sub(r'_+', '_', sub_limpio).strip('_').lower()
+
 # ==========================================
 # 3. INTERFAZ DE USUARIO (UI) - TÍTULO Y FUENTE
 # ==========================================
-st.title("🇭🇳 HN MIP-IA: Explorador Intersectorial Ampliado de Honduras")
+st.title("HN MIP-IA: Explorador Intersectorial Ampliado de Honduras")
 st.markdown(
     "**Fuente oficial de datos:** Banco Central de Honduras (BCH), Matriz Insumo-Producto 2013, "
     "**Tabla 12 (DB)** (Matriz de coeficientes técnicos aplicada sobre la producción bruta total)."
@@ -87,7 +92,7 @@ tab1, tab2 = st.tabs(["📊 Proveedores directos", "👥 Clientes directos"])
 with tab1:
     st.header("🔍 Análisis de Insumos / Proveedores")
     st.markdown(
-        "Este módulo analiza la estructura de costos de una actividad económica compradora. "
+        "Este módulo analiza la **estructura de requerimientos intermedios directos** de una actividad económica compradora. "
         "Permite identificar de qué sectores proviene directamente su gasto intermedio por cada lempira producido."
     )
 
@@ -119,22 +124,24 @@ with tab1:
         df_top10_prov.index = range(1, len(df_top10_prov) + 1)
         st.dataframe(df_top10_prov, width="stretch")
 
-        # Botón para descargar resultados completos del módulo proveedores en CSV
+        # Botón para descargar resultados completos en CSV con nombre seguro
         df_completo_prov = pd.DataFrame({
             "Sector Proveedor": prov_ordenados.index,
             "Coeficiente Técnico (a_ij)": prov_ordenados.values
         })
         csv_prov = df_completo_prov.to_csv(index=False, encoding="utf-8-sig")
+        nombre_prov_limpio = limpiar_nombre_archivo(actividad_compradora)
         st.download_button(
             label="📥 Descargar lista de proveedores (CSV)",
             data=csv_prov,
-            file_name=f"proveedores_{actividad_compradora.replace(' ', '_')}.csv",
+            file_name=f"prov_{nombre_prov_limpio}.csv",
             mime="text/csv"
         )
 
     with col2:
         st.subheader("📉 Representación Gráfica")
-        st.bar_chart(top_10_prov, horizontal=True)
+        # Invertir el orden para que la barra más larga (mayor coeficiente) aparezca arriba en st.bar_chart
+        st.bar_chart(top_10_prov.iloc[::-1], horizontal=True)
 
     st.markdown("---")
     st.subheader("💡 Resumen de Requerimientos Intermedios Compradores")
@@ -165,7 +172,7 @@ with tab1:
 with tab2:
     st.header("🔍 Análisis de Destinos / Clientes")
     st.markdown(
-        "Este módulo analiza la importancia de una actividad económica proveedora como proveedora directa. "
+        "Este módulo analiza la importancia de una actividad económica proveedora como suministradora de insumos directos. "
         "Permite identificar las actividades compradoras que utilizan con mayor intensidad su producción."
     )
 
@@ -176,7 +183,6 @@ with tab2:
     )
 
     # Cálculos para Clientes (Operaciones en Filas de la Matriz A = [a_ij])
-    # Recordar que a_ij representa la compra que realiza la actividad j (columna) a la actividad i (fila)
     coef_clientes = matriz_db.loc[actividad_proveedora]
     clie_activos = coef_clientes[coef_clientes > 0]
     clie_ordenados = clie_activos.sort_values(ascending=False)
@@ -185,7 +191,7 @@ with tab2:
     col3, col4 = st.columns([1, 1])
 
     with col3:
-        st.subheader("Top 10: Clientes directos")
+        st.subheader("Top 10: Actividades usuarias directas")
         df_top10_clie = pd.DataFrame({
             "Sector Cliente (Comprador)": top_10_clie.index,
             "Coeficiente Técnico (a_ij)": top_10_clie.values
@@ -193,22 +199,24 @@ with tab2:
         df_top10_clie.index = range(1, len(df_top10_clie) + 1)
         st.dataframe(df_top10_clie, width="stretch")
 
-        # Botón para descargar resultados completos del módulo clientes en CSV
+        # Botón para descargar resultados completos en CSV con nombre seguro
         df_completo_clie = pd.DataFrame({
             "Sector Cliente (Comprador)": clie_ordenados.index,
             "Coeficiente Técnico (a_ij)": clie_ordenados.values
         })
         csv_clie = df_completo_clie.to_csv(index=False, encoding="utf-8-sig")
+        nombre_clie_limpio = limpiar_nombre_archivo(actividad_proveedora)
         st.download_button(
             label="📥 Descargar lista de clientes (CSV)",
             data=csv_clie,
-            file_name=f"clientes_{actividad_proveedora.replace(' ', '_')}.csv",
+            file_name=f"clie_{nombre_clie_limpio}.csv",
             mime="text/csv"
         )
 
     with col4:
         st.subheader("📉 Representación Gráfica")
-        st.bar_chart(top_10_clie, horizontal=True)
+        # Invertir el orden para que la barra más larga (mayor coeficiente) aparezca arriba en st.bar_chart
+        st.bar_chart(top_10_clie.iloc[::-1], horizontal=True)
 
     st.markdown("---")
     st.subheader("💡 Contexto y Advertencia Metodológica (Clientes)")
@@ -219,8 +227,8 @@ with tab2:
         "compradora utiliza como insumo directo el producto de la actividad proveedora seleccionada por cada lempira "
         "que dicha actividad compradora produce.\n\n"
         "2. **¿Qué NO representan?**\n"
-        "   * **No representan participaciones de mercado:** Esta fila no muestra el porcentaje de ventas de la industria "
-        "proveedora destinadas a cada sector. Para ello se requeriría analizar la matriz de coeficientes de distribución (MIP de asignación).\n"
+        "   * **No representan participaciones de mercado / ventas:** Los coeficientes técnicos no muestran el porcentaje de ventas de la industria "
+        "proveedora destinadas a cada sector. No indica qué proporción del mercado capta cada comprador.\n"
         "   * **No sumabilidad:** Sumar verticalmente estos coeficientes no tiene un significado económico directo "
         "relacionado con la producción agregada o las ventas totales del sector proveedor. Evite la acumulación de coeficientes por fila.\n"
         "   * **No constituyen multiplicadores:** Tampoco capturan los efectos inducidos o indirectos del modelo de Leontief."
