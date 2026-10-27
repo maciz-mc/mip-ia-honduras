@@ -3,6 +3,8 @@ import pandas as pd
 import streamlit as st
 import altair as alt
 import re
+from google import genai
+from google.genai import types
 
 # ==========================================
 # 1. CONFIGURACIÓN DE LA PÁGINA
@@ -71,6 +73,75 @@ matriz_db = matriz_numerica
 def limpiar_nombre_archivo(nombre):
     sub_limpio = re.sub(r'[^a-zA-Z0-9_]', '_', nombre)
     return re.sub(r'_+', '_', sub_limpio).strip('_').lower()
+
+# ==========================================
+# INTERPRETACIÓN CON IA (SIN CÁLCULOS EXTERNOS)
+# ==========================================
+MODELO_GEMINI = "gemini-3.6-flash"  # Modelo verificado en Colab; sujeto a disponibilidad de API
+
+INSTRUCCIONES_GEMINI = """Eres un asistente especializado en economía insumo-producto de Honduras.
+Interpreta exclusivamente los resultados numéricos suministrados por la aplicación,
+procedentes de la Tabla 12 (DB) de la Matriz Insumo-Producto 2013 del BCH.
+No calcules ni inventes coeficientes, cantidades, porcentajes, rankings o fuentes.
+Distingue rigurosamente los coeficientes técnicos directos a_ij de los multiplicadores
+Leontief y de los efectos indirectos o inducidos, que NO se han calculado.
+En PROVEEDORES, a_ij expresa insumos del proveedor i por lempira de producción del comprador j.
+En CLIENTES, a_ij expresa insumos del proveedor i por lempira de producción de CADA
+comprador j: no son participaciones de mercado, distribución de ventas ni cuotas de demanda.
+No sumes los coeficientes de una fila ni infieras ventas totales o impacto agregado.
+No afirmes causalidad ni actualices los datos a años posteriores a 2013.
+Responde en español claro y preciso, en 2 o 3 párrafos breves. Menciona las limitaciones.
+"""
+
+
+def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
+    """Solicita una explicación; los datos y cálculos provienen exclusivamente de Python."""
+    try:
+        clave_api = st.secrets.get("GEMINI_API_KEY")
+    except Exception:
+        clave_api = None
+    if not clave_api:
+        st.warning("Gemini no está configurado. Añadí GEMINI_API_KEY a los secretos de Streamlit.")
+        return
+
+    detalle = "\n".join(
+        f"- {sector}: {float(coef):.6f}"
+        for sector, coef in resultados.items()
+    )
+    contexto = (
+        f"Módulo: {tipo}\nActividad seleccionada: {actividad}\n"
+        f"Los diez coeficientes técnicos directos más altos (orden descendente):\n{detalle}"
+    )
+    if tipo == "PROVEEDORES" and suma_columna is not None:
+        contexto += f"\nSuma de coeficientes de la columna completa: {suma_columna:.6f}"
+
+    try:
+        cliente = genai.Client(api_key=clave_api)
+        respuesta = cliente.models.generate_content(
+            model=MODELO_GEMINI,
+            contents=contexto + "\nExplica la lectura económica de estos resultados.",
+            config=types.GenerateContentConfig(
+                system_instruction=INSTRUCCIONES_GEMINI,
+                temperature=0.2,
+                max_output_tokens=650,
+            ),
+        )
+        if respuesta.text:
+            st.markdown(respuesta.text)
+            st.caption("Interpretación generada por IA; verificá sus afirmaciones con las tablas y notas metodológicas.")
+        else:
+            st.warning("Gemini no devolvió una interpretación. Intentá nuevamente.")
+    except Exception as error:
+        codigo = getattr(error, "code", None)
+        if codigo == 429:
+            st.warning("Gemini alcanzó su límite de solicitudes o cuota. Intentá más tarde.")
+        elif codigo in (401, 403):
+            st.error("No fue posible autenticar la API de Gemini. Revisá la clave y sus permisos en Streamlit.")
+        elif codigo == 404:
+            st.error("El modelo configurado no está disponible para esta API. Revisá MODELO_GEMINI.")
+        else:
+            st.error(f"No fue posible obtener la interpretación de Gemini ({type(error).__name__}).")
+
 
 # ==========================================
 # 3. INTERFAZ DE USUARIO (UI) - TÍTULO Y FUENTE
@@ -180,6 +251,15 @@ with tab1:
             value=f"{centavos_prov:.2f} centavos por L 1.00 de producción",
         )
 
+    st.subheader("🤖 Interpretación asistida por Gemini")
+    st.caption("La IA interpreta los coeficientes calculados por Python; no realiza cálculos adicionales.")
+    if st.button("Interpretar proveedores con Gemini", key="gemini_proveedores"):
+        with st.spinner("Gemini está interpretando los resultados..."):
+            interpretar_con_gemini(
+                "PROVEEDORES", actividad_compradora, top_10_prov,
+                suma_columna=suma_total_prov,
+            )
+
     st.info(
         "📝 **Nota metodológica importante (Proveedores):** Los valores mostrados corresponden a "
         "los coeficientes técnicos directos de la **Tabla 12 (DB)** publicada por el BCH. "
@@ -282,3 +362,9 @@ with tab2:
         "relacionado con la producción agregada o las ventas totales del sector proveedor. Evite la acumulación de coeficientes por fila.\n"
         "   * **No constituyen multiplicadores:** Tampoco capturan los efectos inducidos o indirectos del modelo de Leontief."
     )
+
+    st.subheader("🤖 Interpretación asistida por Gemini")
+    st.caption("Los coeficientes por fila no representan ventas ni participaciones de mercado.")
+    if st.button("Interpretar clientes con Gemini", key="gemini_clientes"):
+        with st.spinner("Gemini está interpretando los resultados..."):
+            interpretar_con_gemini("CLIENTES", actividad_proveedora, top_10_clie)
