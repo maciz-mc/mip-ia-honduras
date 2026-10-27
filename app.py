@@ -1,3 +1,4 @@
+import io
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -6,7 +7,7 @@ import streamlit as st
 # 1. CONFIGURACIÓN DE LA PÁGINA
 # ==========================================
 st.set_page_config(
-    page_title="MIP-IA: Explorador de Honduras", page_icon="🇭🇳", layout="wide"
+    page_title="HN MIP-IA: Explorador de Honduras", page_icon="🇭🇳", layout="wide"
 )
 
 # ==========================================
@@ -17,33 +18,32 @@ ruta_csv = "data/mip_honduras_2013.csv"
 
 @st.cache_data
 def cargar_datos(ruta):
-  """Carga la matriz de coeficientes técnicos desde el CSV,
-
-  estableciendo la primera columna como índice.
-  """
-  df = pd.read_csv(ruta, index_col=0)
-  return df
+    """Carga la matriz de coeficientes técnicos desde el CSV,
+    estableciendo la primera columna como índice.
+    """
+    df = pd.read_csv(ruta, index_col=0)
+    return df
 
 
 # Manejo de excepciones en caso de que el archivo no exista
 try:
-  matriz_db = cargar_datos(ruta_csv)
+    matriz_db = cargar_datos(ruta_csv)
 except FileNotFoundError:
-  st.error(
-      f"❌ **Error crítico:** No se encontró el archivo en la ruta `{ruta_csv}`."
-      " Asegúrate de haber ejecutado el script de exportación en Google Colab"
-      " y de que la carpeta 'data' esté en el repositorio."
-  )
-  st.stop()
+    st.error(
+        f"❌ **Error crítico:** No se encontró el archivo en la ruta `{ruta_csv}`."
+        " Asegúrate de haber ejecutado el script de exportación en Google Colab"
+        " y de que la carpeta 'data' esté en el repositorio."
+    )
+    st.stop()
 
 # Comprobación estricta de dimensiones (95x95)
 filas, columnas = matriz_db.shape
 if filas != 95 or columnas != 95:
-  st.error(
-      f"❌ **Error de dimensiones:** Se esperaban 95x95, pero el archivo tiene"
-      f" dimensiones {filas}x{columnas}."
-  )
-  st.stop()
+    st.error(
+        f"❌ **Error de dimensiones:** Se esperaban 95x95, pero el archivo tiene"
+        f" dimensiones {filas}x{columnas}."
+    )
+    st.stop()
 
 # Comprobación estricta de que los 9,025 coeficientes sean numéricos y finitos
 matriz_numerica = matriz_db.apply(pd.to_numeric, errors="coerce")
@@ -51,109 +51,177 @@ valores_nulos = matriz_numerica.isna().sum().sum()
 valores_no_finitos = np.isinf(matriz_numerica.to_numpy()).sum()
 
 if valores_nulos > 0 or valores_no_finitos > 0:
-  st.error(
-      "❌ **Error de datos:** La matriz contiene valores no numéricos,"
-      f" faltantes ({valores_nulos}) o infinitos ({valores_no_finitos})."
-  )
-  st.stop()
+    st.error(
+        "❌ **Error de datos:** La matriz contiene valores no numéricos,"
+        f" faltantes ({valores_nulos}) o infinitos ({valores_no_finitos})."
+    )
+    st.stop()
+
+# Garantizar compatibilidad estricta de nombres y orden entre filas y columnas
+if not matriz_numerica.index.equals(matriz_numerica.columns):
+    st.error(
+        "❌ **Error de integridad:** Los nombres o el orden de las filas (actividades proveedoras)"
+        " y las columnas (actividades compradoras) no son consistentes."
+    )
+    st.stop()
 
 # Garantizar que los cálculos posteriores utilicen la matriz validada
 matriz_db = matriz_numerica
 
-
 # ==========================================
-# 3. INTERFAZ DE USUARIO (UI) CON STREAMLIT
+# 3. INTERFAZ DE USUARIO (UI) - TÍTULO Y FUENTE
 # ==========================================
-
-# Título y Fuente oficiales
-st.title("🇭🇳 MIP-IA: Explorador de relaciones intersectoriales de Honduras")
+st.title("🇭🇳 HN MIP-IA: Explorador Intersectorial Ampliado de Honduras")
 st.markdown(
-    "**Fuente:** Banco Central de Honduras (BCH), Matriz Insumo-Producto 2013,"
-    " **Tabla 12 (DB)** (Matriz de coeficientes técnicos aplicada sobre"
-    " producción bruta total)."
+    "**Fuente oficial de datos:** Banco Central de Honduras (BCH), Matriz Insumo-Producto 2013, "
+    "**Tabla 12 (DB)** (Matriz de coeficientes técnicos aplicada sobre la producción bruta total)."
 )
 st.markdown("---")
 
-# Lista desplegable utilizando las columnas (industrias compradoras)
-# Resuelve las discrepancias menores de denominación en filas (12, 86 y 87)
-lista_actividades = list(matriz_db.columns)
-actividad_seleccionada = st.selectbox(
-    "🔍 Seleccione una actividad económica (industria compradora):",
-    lista_actividades,
-)
+# Crear las dos pestañas principales del proyecto
+tab1, tab2 = st.tabs(["📊 Proveedores directos", "👥 Clientes directos"])
 
 # ==========================================
-# 4. PROCESAMIENTO Y CÁLCULOS ECONÓMICOS
+# 4. PESTAÑA 1: PROVEEDORES DIRECTOS (Eje de Columnas)
 # ==========================================
+with tab1:
+    st.header("🔍 Análisis de Insumos / Proveedores")
+    st.markdown(
+        "Este módulo analiza la estructura de costos de una actividad económica compradora. "
+        "Permite identificar de qué sectores proviene directamente su gasto intermedio por cada lempira producido."
+    )
 
-# Extraer la columna correspondiente a la actividad seleccionada
-coeficientes_actividad = matriz_db[actividad_seleccionada]
+    lista_actividades = list(matriz_db.columns)
+    actividad_compradora = st.selectbox(
+        "Seleccione una actividad económica (industria compradora):",
+        lista_actividades,
+        key="sb_proveedores"
+    )
 
-# Filtrar proveedores con coeficientes estrictamente mayores a cero
-proveedores_activos = coeficientes_actividad[coeficientes_actividad > 0]
+    # Cálculos para Proveedores (Operaciones en Columnas)
+    coef_proveedores = matriz_db[actividad_compradora]
+    prov_activos = coef_proveedores[coef_proveedores > 0]
+    prov_ordenados = prov_activos.sort_values(ascending=False)
+    top_10_prov = prov_ordenados.head(10)
 
-# Ordenar los proveedores de mayor a menor coeficiente técnico
-proveedores_ordenados = proveedores_activos.sort_values(ascending=False)
+    # Sumas de la columna
+    suma_total_prov = coef_proveedores.sum()
+    centavos_prov = suma_total_prov * 100
 
-# Seleccionar los 10 principales requerimientos directos
-top_10 = proveedores_ordenados.head(10)
+    col1, col2 = st.columns([1, 1])
 
-# Calcular la suma total de los 95 coeficientes técnicos de la actividad
-suma_total_coeficientes = coeficientes_actividad.sum()
-centavos_por_lempira = suma_total_coeficientes * 100
+    with col1:
+        st.subheader("Top 10: Proveedores directos")
+        df_top10_prov = pd.DataFrame({
+            "Sector Proveedor": top_10_prov.index,
+            "Coeficiente Técnico (a_ij)": top_10_prov.values
+        })
+        df_top10_prov.index = range(1, len(df_top10_prov) + 1)
+        st.dataframe(df_top10_prov, width="stretch")
+
+        # Botón para descargar resultados completos del módulo proveedores en CSV
+        df_completo_prov = pd.DataFrame({
+            "Sector Proveedor": prov_ordenados.index,
+            "Coeficiente Técnico (a_ij)": prov_ordenados.values
+        })
+        csv_prov = df_completo_prov.to_csv(index=False, encoding="utf-8-sig")
+        st.download_button(
+            label="📥 Descargar lista de proveedores (CSV)",
+            data=csv_prov,
+            file_name=f"proveedores_{actividad_compradora.replace(' ', '_')}.csv",
+            mime="text/csv"
+        )
+
+    with col2:
+        st.subheader("📉 Representación Gráfica")
+        st.bar_chart(top_10_prov, horizontal=True)
+
+    st.markdown("---")
+    st.subheader("💡 Resumen de Requerimientos Intermedios Compradores")
+    
+    m1, m2 = st.columns(2)
+    with m1:
+        st.metric(
+            label="Suma de Coeficientes Técnicos de la Columna",
+            value=f"{suma_total_prov:.6f}",
+        )
+    with m2:
+        st.metric(
+            label="Insumos Intermedios Directos",
+            value=f"{centavos_prov:.2f} centavos por L 1.00 de producción",
+        )
+
+    st.info(
+        "📝 **Nota metodológica importante (Proveedores):** Los valores mostrados corresponden a "
+        "los coeficientes técnicos directos de la **Tabla 12 (DB)** publicada por el BCH. "
+        "Estos coeficientes reflejan exclusivamente los **requerimientos directos** de insumos intermedios "
+        "necesarios para generar un lempira de producción en el sector seleccionado, "
+        "**y no constituyen multiplicadores de Leontief** (los cuales capturan efectos directos e indirectos)."
+    )
 
 # ==========================================
-# 5. VISUALIZACIÓN DE RESULTADOS
+# 5. PESTAÑA 2: CLIENTES DIRECTOS (Eje de Filas)
 # ==========================================
+with tab2:
+    st.header("🔍 Análisis de Destinos / Clientes")
+    st.markdown(
+        "Este módulo analiza la importancia de una actividad económica proveedora como proveedora directa. "
+        "Permite identificar las actividades compradoras que utilizan con mayor intensidad su producción."
+    )
 
-col1, col2 = st.columns([1, 1])
+    actividad_proveedora = st.selectbox(
+        "Seleccione una actividad económica (industria proveedora):",
+        lista_actividades,
+        key="sb_clientes"
+    )
 
-with col1:
-  st.subheader("📊 Diez principales requerimientos intermedios directos")
-  st.markdown(
-      f"Principales insumos requeridos por **{actividad_seleccionada}**:"
-  )
+    # Cálculos para Clientes (Operaciones en Filas de la Matriz A = [a_ij])
+    # Recordar que a_ij representa la compra que realiza la actividad j (columna) a la actividad i (fila)
+    coef_clientes = matriz_db.loc[actividad_proveedora]
+    clie_activos = coef_clientes[coef_clientes > 0]
+    clie_ordenados = clie_activos.sort_values(ascending=False)
+    top_10_clie = clie_ordenados.head(10)
 
-  # Preparar tabla formateada para visualización
-  df_top10 = pd.DataFrame({
-      "Sector Proveedor": top_10.index,
-      "Coeficiente Técnico (a_ij)": top_10.values,
-  })
-  df_top10.index = range(1, len(df_top10) + 1)
-  st.dataframe(df_top10, use_container_width=True)
+    col3, col4 = st.columns([1, 1])
 
-with col2:
-  st.subheader("📉 Representación Gráfica")
-  # Gráfico de barras horizontal nativo de Streamlit
-  st.bar_chart(top_10, horizontal=True)
+    with col3:
+        st.subheader("Top 10: Clientes directos")
+        df_top10_clie = pd.DataFrame({
+            "Sector Cliente (Comprador)": top_10_clie.index,
+            "Coeficiente Técnico (a_ij)": top_10_clie.values
+        })
+        df_top10_clie.index = range(1, len(df_top10_clie) + 1)
+        st.dataframe(df_top10_clie, width="stretch")
 
-st.markdown("---")
+        # Botón para descargar resultados completos del módulo clientes en CSV
+        df_completo_clie = pd.DataFrame({
+            "Sector Cliente (Comprador)": clie_ordenados.index,
+            "Coeficiente Técnico (a_ij)": clie_ordenados.values
+        })
+        csv_clie = df_completo_clie.to_csv(index=False, encoding="utf-8-sig")
+        st.download_button(
+            label="📥 Descargar lista de clientes (CSV)",
+            data=csv_clie,
+            file_name=f"clientes_{actividad_proveedora.replace(' ', '_')}.csv",
+            mime="text/csv"
+        )
 
-# ==========================================
-# 6. MÉTRICAS DE RESUMEN Y NOTA METODOLÓGICA
-# ==========================================
+    with col4:
+        st.subheader("📉 Representación Gráfica")
+        st.bar_chart(top_10_clie, horizontal=True)
 
-st.subheader("💡 Resumen de Requerimientos Intermedios")
-
-m1, m2 = st.columns(2)
-with m1:
-  st.metric(
-      label="Suma de Coeficientes Técnicos",
-      value=f"{suma_total_coeficientes:.6f}",
-  )
-with m2:
-  st.metric(
-      label="Insumos Intermedios Directos",
-      value=f"{centavos_por_lempira:.2f} centavos por L 1.00 de producción",
-  )
-
-# Nota metodológica obligatoria
-st.info(
-    "📝 **Nota metodológica importante:** Los valores mostrados corresponden a"
-    " los coeficientes técnicos directos de la **Tabla 12 (DB)** publicada por"
-    " el BCH. Estos coeficientes reflejan exclusivamente los **requerimientos"
-    " directos** de insumos intermedios necesarios para generar un lempira de"
-    " producción en el sector seleccionado, **y no constituyen multiplicadores"
-    " de Leontief** (los cuales capturan efectos directos e indirectos a través"
-    " de la matriz inversa)."
-)
+    st.markdown("---")
+    st.subheader("💡 Contexto y Advertencia Metodológica (Clientes)")
+    
+    st.warning(
+        "⚠️ **Interpretación económica fundamental del análisis por fila:**\n\n"
+        "1. **¿Qué representan estos coeficientes?** Indican la intensidad con la que cada actividad "
+        "compradora utiliza como insumo directo el producto de la actividad proveedora seleccionada por cada lempira "
+        "que dicha actividad compradora produce.\n\n"
+        "2. **¿Qué NO representan?**\n"
+        "   * **No representan participaciones de mercado:** Esta fila no muestra el porcentaje de ventas de la industria "
+        "proveedora destinadas a cada sector. Para ello se requeriría analizar la matriz de coeficientes de distribución (MIP de asignación).\n"
+        "   * **No sumabilidad:** Sumar verticalmente estos coeficientes no tiene un significado económico directo "
+        "relacionado con la producción agregada o las ventas totales del sector proveedor. Evite la acumulación de coeficientes por fila.\n"
+        "   * **No constituyen multiplicadores:** Tampoco capturan los efectos inducidos o indirectos del modelo de Leontief."
+    )
