@@ -130,7 +130,7 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
             config=types.GenerateContentConfig(
                 system_instruction=INSTRUCCIONES_GEMINI,
                 temperature=0.2,
-                max_output_tokens=650,
+                max_output_tokens=2048,
             ),
         )
         if respuesta.text:
