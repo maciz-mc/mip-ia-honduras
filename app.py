@@ -142,6 +142,9 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
         else:
             st.error(f"No fue posible obtener la interpretación de Gemini ({type(error).__name__}).")
 
+        st.error(f"Diagnóstico HTTP: {codigo}")
+        st.error(f"Detalle técnico: {str(error)[:500]}")
+
 
 # ==========================================
 # 3. INTERFAZ DE USUARIO (UI) - TÍTULO Y FUENTE
