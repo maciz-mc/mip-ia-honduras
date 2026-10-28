@@ -6,6 +6,23 @@ import re
 from google import genai
 from google.genai import types
 
+st.markdown("""
+<style>
+div.st-key-gemini_proveedores button {
+    background-color: #5B3294 !important;
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 17px !important;
+    border: 1px solid #8254BA !important;
+}
+
+div.st-key-gemini_proveedores button:hover {
+    background-color: #7446AD !important;
+    border-color: #A784D4 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ==========================================
 # 1. CONFIGURACIÓN DE LA PÁGINA
 # ==========================================
