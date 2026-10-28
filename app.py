@@ -459,7 +459,7 @@ with tab2:
     with st.expander("📘 Notas metodológicas del análisis de Clientes"):
         st.markdown(
             """
-            <div style="color:#FFD54F; font-size:16px; line-height:1.7;">
+            <div style="color:#C9B879; font-size:16px; line-height:1.7;">
 
             <b>Interpretación económica fundamental del análisis por fila</b>
 
