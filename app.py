@@ -338,7 +338,7 @@ with tab1:
                 suma_columna=suma_total_prov,
             )
 
-       with st.expander("📘 Nota metodológica importante (Proveedores)"):
+    with st.expander("📘 Nota metodológica importante (Proveedores)"):
         st.markdown(
             """
             <div style="color:#2997FF; font-size:16px; line-height:1.7;">
