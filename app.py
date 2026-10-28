@@ -128,12 +128,7 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
     except Exception:
         clave_api = None
       
-    if clave_api:
-        import hashlib
-        huella = hashlib.sha256(clave_api.strip().encode()).hexdigest()[:12]
-        st.caption(f"Huella de Streamlit: {huella}")
-        st.caption(f"Longitud: {len(clave_api.strip())}")
-
+    
     if not clave_api:
         st.warning("Gemini no está configurado. Añadí GEMINI_API_KEY a los secretos de Streamlit.")
         return
