@@ -450,10 +450,10 @@ with tab2:
         use_container_width=True,
         key="gemini_clientes"
     ):
-    with st.spinner("Gemini está interpretando los resultados..."):
-        interpretar_con_gemini(
-            "CLIENTES",
-            actividad_proveedora,
-            top_10_clie
+        with st.spinner("Gemini está interpretando los resultados..."):
+            interpretar_con_gemini(
+                "CLIENTES",
+                actividad_proveedora,
+                top_10_clie
         )
 
