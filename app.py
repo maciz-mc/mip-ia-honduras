@@ -23,6 +23,30 @@ div.st-key-gemini_proveedores button:hover {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+.st-key-gemini_clientes button[kind="primary"] {
+    background: #63369C !important;
+    background-color: #63369C !important;
+    border: 2px solid #9164C5 !important;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    font-size: 18px !important;
+}
+
+.st-key-gemini_clientes button[kind="primary"] p {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    font-size: 18px !important;
+}
+
+.st-key-gemini_clientes button[kind="primary"]:hover {
+    background: #8052B5 !important;
+    background-color: #8052B5 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ==========================================
 # 1. CONFIGURACIÓN DE LA PÁGINA
 # ==========================================
