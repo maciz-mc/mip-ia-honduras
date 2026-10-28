@@ -218,40 +218,40 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
             st.warning("Gemini no devolvió una interpretación. Intentá nuevamente.")
             
             except Exception as error:
-            codigo = getattr(error, "code", None)
-
-            if codigo == 503:
-                st.warning(
-                    "⚠️ Gemini no está disponible temporalmente. "
-                    "El servicio está experimentando una demanda elevada. "
-                    "Esperá unos minutos e intentá generar nuevamente "
-                    "el análisis económico. "
-                    "Los datos y gráficos de MIP-IA continúan disponibles."
-                )
-
-            elif codigo == 429:
-                st.warning(
-                    "Gemini alcanzó su límite de solicitudes o cuota. "
-                    "Intentá más tarde."
-                )
+                codigo = getattr(error, "code", None)
     
-            elif codigo in (401, 403):
-                st.error(
-                    "No fue posible autenticar la API de Gemini. "
-                    "Revisá la clave y sus permisos en Streamlit."
-                )
+                if codigo == 503:
+                    st.warning(
+                        "⚠️ Gemini no está disponible temporalmente. "
+                        "El servicio está experimentando una demanda elevada. "
+                        "Esperá unos minutos e intentá generar nuevamente "
+                        "el análisis económico. "
+                        "Los datos y gráficos de MIP-IA continúan disponibles."
+                    )
     
-            elif codigo == 404:
-                st.error(
-                    "El modelo configurado no está disponible para esta API. "
-                    "Revisá MODELO_GEMINI."
-                )
-
-            else:
-                st.error(
-                    "No fue posible obtener la interpretación de Gemini. "
-                    "Intentá nuevamente más tarde."
-                )
+                elif codigo == 429:
+                    st.warning(
+                        "Gemini alcanzó su límite de solicitudes o cuota. "
+                        "Intentá más tarde."
+                    )
+        
+                elif codigo in (401, 403):
+                    st.error(
+                        "No fue posible autenticar la API de Gemini. "
+                        "Revisá la clave y sus permisos en Streamlit."
+                    )
+        
+                elif codigo == 404:
+                    st.error(
+                        "El modelo configurado no está disponible para esta API. "
+                        "Revisá MODELO_GEMINI."
+                    )
+    
+                else:
+                    st.error(
+                        "No fue posible obtener la interpretación de Gemini. "
+                        "Intentá nuevamente más tarde."
+                    )
 
 
 # ==========================================
