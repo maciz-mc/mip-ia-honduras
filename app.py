@@ -36,8 +36,8 @@ st.markdown("""
 
 .st-key-gemini_clientes button[kind="primary"] p {
     color: #FFFFFF !important;
-    font-weight: 800 !important;
-    font-size: 18px !important;
+    font-weight: 400 !important;
+    font-size: 17px !important;
 }
 
 .st-key-gemini_clientes button[kind="primary"]:hover {
