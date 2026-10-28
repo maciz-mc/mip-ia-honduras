@@ -26,12 +26,10 @@ div.st-key-gemini_proveedores button:hover {
     border-color: #A784D4 !important;
 }
 
-button[data-baseweb="tab"] {
-    font-size: 19px !important;
-}
-
-button[data-baseweb="tab"] p {
-    font-size: 19px !important;
+/* Tamaño de las pestañas Proveedores y Clientes */
+div[data-baseweb="tab-list"] button[data-baseweb="tab"],
+div[data-baseweb="tab-list"] button[data-baseweb="tab"] * {
+    font-size: 21px !important;
 }
 
 </style>
