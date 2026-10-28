@@ -25,6 +25,15 @@ div.st-key-gemini_proveedores button:hover {
     background-color: #7446AD !important;
     border-color: #A784D4 !important;
 }
+
+button[data-baseweb="tab"] {
+    font-size: 19px !important;
+}
+
+button[data-baseweb="tab"] p {
+    font-size: 19px !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
