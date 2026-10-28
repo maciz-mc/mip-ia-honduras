@@ -217,7 +217,7 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
         else:
             st.warning("Gemini no devolvió una interpretación. Intentá nuevamente.")
             
-        except Exception as error:
+            except Exception as error:
             codigo = getattr(error, "code", None)
 
             if codigo == 503:
