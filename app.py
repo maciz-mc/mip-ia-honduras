@@ -16,6 +16,11 @@ div.st-key-gemini_proveedores button {
     border: 2px solid #8254BA !important;
 }
 
+div.st-key-gemini_proveedores button p {
+    font-size: 18px !important;
+    font-weight: 400 !important;
+}
+
 div.st-key-gemini_proveedores button:hover {
     background-color: #7446AD !important;
     border-color: #A784D4 !important;
