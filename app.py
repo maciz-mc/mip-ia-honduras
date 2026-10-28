@@ -30,8 +30,8 @@ st.markdown("""
     background-color: #63369C !important;
     border: 2px solid #9164C5 !important;
     color: #FFFFFF !important;
-    font-weight: 800 !important;
-    font-size: 18px !important;
+    font-weight: 700 !important;
+    font-size: 17px !important;
 }
 
 .st-key-gemini_clientes button[kind="primary"] p {
