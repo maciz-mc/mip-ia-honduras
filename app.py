@@ -28,7 +28,7 @@ st.markdown("""
 .st-key-gemini_clientes button[kind="primary"] {
     background: #63369C !important;
     background-color: #63369C !important;
-    border: 2px solid #9164C5 !important;
+    border: 1px solid #9164C5 !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
     font-size: 17px !important;
