@@ -219,13 +219,13 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
 
         if not texto.strip():
                 st.warning("Gemini no devolvió una interpretación. Intentá nuevamente.")
-            elif "MAX_TOKENS" in str(motivo):
+        elif "MAX_TOKENS" in str(motivo):
                 st.warning(
                     "Gemini alcanzó el límite de generación. "
                     "La interpretación podría estar incompleta. "
                     "Intentá nuevamente."
                 )
-            else:
+        else:
                 st.markdown(texto)
                 st.caption(
                     "Interpretación generada por IA; verificá sus afirmaciones "
