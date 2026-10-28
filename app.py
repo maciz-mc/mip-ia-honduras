@@ -338,22 +338,22 @@ with tab1:
                 suma_columna=suma_total_prov,
             )
 
-   with st.expander("📘 Nota metodológica importante (Proveedores)"):
-    st.markdown(
-        """
-        <div style="color:#2997FF; font-size:16px; line-height:1.7;">
-        Los valores mostrados corresponden a los coeficientes técnicos
-        directos de la <b>Tabla 12 (DB)</b> publicada por el BCH.
-        Estos coeficientes reflejan exclusivamente los
-        <b>requerimientos directos</b> de insumos intermedios
-        necesarios para generar un lempira de producción en el
-        sector seleccionado, <b>y no constituyen multiplicadores
-        de Leontief</b> (los cuales capturan efectos directos
-        e indirectos).
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+       with st.expander("📘 Nota metodológica importante (Proveedores)"):
+        st.markdown(
+            """
+            <div style="color:#2997FF; font-size:16px; line-height:1.7;">
+            Los valores mostrados corresponden a los coeficientes técnicos
+            directos de la <b>Tabla 12 (DB)</b> publicada por el BCH.
+            Estos coeficientes reflejan exclusivamente los
+            <b>requerimientos directos</b> de insumos intermedios
+            necesarios para generar un lempira de producción en el
+            sector seleccionado, <b>y no constituyen multiplicadores
+            de Leontief</b> (los cuales capturan efectos directos
+            e indirectos).
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 # ==========================================
 # 5. PESTAÑA 2: CLIENTES DIRECTOS (Eje de Filas)
