@@ -456,11 +456,50 @@ with tab2:
                 top_10_clie
         )
 
-
     with st.expander("📘 Notas metodológicas del análisis de Clientes"):
         st.markdown(
-            "Los coeficientes técnicos muestran los requerimientos "
-            "directos de insumos por unidad de producción de cada "
-            "actividad compradora. No representan participaciones "
-            "de mercado ni multiplicadores de Leontief."
+            """
+            <div style="color:#FFD54F; font-size:16px; line-height:1.7;">
+
+            <b>Interpretación económica fundamental del análisis por fila</b>
+
+            <p><b>1. ¿Qué representan estos coeficientes?</b></p>
+
+            <p>
+            Indican la intensidad con la que cada actividad compradora
+            utiliza como insumo directo el producto de la actividad
+            proveedora seleccionada, por cada lempira que dicha
+            actividad compradora produce.
+            </p>
+
+            <p><b>2. ¿Qué NO representan?</b></p>
+
+            <p>
+            <b>Participaciones de mercado o ventas:</b>
+            Los coeficientes técnicos no muestran el porcentaje
+            de ventas de la industria proveedora destinadas a
+            cada sector. Tampoco indican qué proporción del
+            mercado capta cada comprador.
+            </p>
+
+            <p>
+            <b>Sumabilidad:</b>
+            Sumar los coeficientes de una fila no permite
+            determinar la producción agregada ni las ventas
+            totales del sector proveedor. Por tanto, no debe
+            interpretarse esa suma como un indicador económico
+            de participación o demanda total.
+            </p>
+
+            <p>
+            <b>Multiplicadores:</b>
+            Estos coeficientes no constituyen multiplicadores
+            de Leontief ni capturan los efectos indirectos
+            o inducidos sobre el resto de la economía.
+            </p>
+
+            </div>
+            """,
+            unsafe_allow_html=True
         )
+   
