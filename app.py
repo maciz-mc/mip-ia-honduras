@@ -208,6 +208,9 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
                 max_output_tokens=2048,
             ),
         )
+        if respuesta.candidates:
+            motivo = respuesta.candidates[0].finish_reason
+            st.caption(f"Diagnóstico Gemini: {motivo}")
         if respuesta.text:
             st.markdown(respuesta.text)
             st.caption("Interpretación generada por IA; verificá sus afirmaciones con las tablas y notas metodológicas.")
