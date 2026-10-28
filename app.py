@@ -209,15 +209,15 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
             ),
         )
         
-            if respuesta.candidates:
-                motivo = respuesta.candidates[0].finish_reason
+        if respuesta.candidates:
+            motivo = respuesta.candidates[0].finish_reason
                 st.caption(f"Diagnóstico Gemini: {motivo}")
-            else:
+        else:
                 motivo = None
 
-            texto = respuesta.text or ""
+        texto = respuesta.text or ""
 
-            if not texto.strip():
+        if not texto.strip():
                 st.warning("Gemini no devolvió una interpretación. Intentá nuevamente.")
             elif "MAX_TOKENS" in str(motivo):
                 st.warning(
