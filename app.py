@@ -208,14 +208,30 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
                 max_output_tokens=2048,
             ),
         )
-        if respuesta.candidates:
-            motivo = respuesta.candidates[0].finish_reason
-            st.caption(f"Diagnóstico Gemini: {motivo}")
-        if respuesta.text:
-            st.markdown(respuesta.text)
-            st.caption("Interpretación generada por IA; verificá sus afirmaciones con las tablas y notas metodológicas.")
-        else:
-            st.warning("Gemini no devolvió una interpretación. Intentá nuevamente.")
+        
+            if respuesta.candidates:
+                motivo = respuesta.candidates[0].finish_reason
+                st.caption(f"Diagnóstico Gemini: {motivo}")
+            else:
+                motivo = None
+
+            texto = respuesta.text or ""
+
+            if not texto.strip():
+                st.warning("Gemini no devolvió una interpretación. Intentá nuevamente.")
+            elif "MAX_TOKENS" in str(motivo):
+                st.warning(
+                    "Gemini alcanzó el límite de generación. "
+                    "La interpretación podría estar incompleta. "
+                    "Intentá nuevamente."
+                )
+            else:
+                st.markdown(texto)
+                st.caption(
+                    "Interpretación generada por IA; verificá sus afirmaciones "
+                    "con las tablas y notas metodológicas."
+                )
+
             
     except Exception as error:
             codigo = getattr(error, "code", None)
