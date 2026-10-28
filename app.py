@@ -438,11 +438,11 @@ with tab2:
 
     st.subheader("🤖 Interpretación asistida por Gemini")
 
-st.caption(
-    "La IA interpreta los coeficientes calculados por Python; "
-    "no realiza cálculos adicionales."
-)
-
+    st.caption(
+        "La IA interpreta los coeficientes calculados por Python; "
+        "no realiza cálculos adicionales."
+    )
+    
     
     if st.button(
         "✨ Generar análisis económico con IA",
@@ -450,10 +450,10 @@ st.caption(
         use_container_width=True,
         key="gemini_clientes"
     ):
-        with st.spinner("Gemini está interpretando los resultados..."):
-            interpretar_con_gemini(
-                "CLIENTES",
-                actividad_proveedora,
-                top_10_clie
-            )
+    with st.spinner("Gemini está interpretando los resultados..."):
+        interpretar_con_gemini(
+            "CLIENTES",
+            actividad_proveedora,
+            top_10_clie
+        )
 
