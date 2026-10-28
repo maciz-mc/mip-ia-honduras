@@ -11,9 +11,9 @@ st.markdown("""
 div.st-key-gemini_proveedores button {
     background-color: #5B3294 !important;
     color: white !important;
-    font-weight: 700 !important;
+    font-weight: 800 !important;
     font-size: 17px !important;
-    border: 1px solid #8254BA !important;
+    border: 2px solid #8254BA !important;
 }
 
 div.st-key-gemini_proveedores button:hover {
