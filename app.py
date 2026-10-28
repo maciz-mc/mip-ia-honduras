@@ -25,7 +25,7 @@ div.st-key-gemini_proveedores button:hover {
 
 st.markdown("""
 <style>
-.st-key-gemini_clientes button {
+.st-key-gemini_clientes button[kind="primary"] {
     background: #63369C !important;
     background-color: #63369C !important;
     border: 1px solid #9164C5 !important;
