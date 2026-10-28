@@ -338,12 +338,21 @@ with tab1:
                 suma_columna=suma_total_prov,
             )
 
-    st.info(
-        "📝 **Nota metodológica importante (Proveedores):** Los valores mostrados corresponden a "
-        "los coeficientes técnicos directos de la **Tabla 12 (DB)** publicada por el BCH. "
-        "Estos coeficientes reflejan exclusivamente los **requerimientos directos** de insumos intermedios "
-        "necesarios para generar un lempira de producción en el sector seleccionado, "
-        "**y no constituyen multiplicadores de Leontief** (los cuales capturan efectos directos e indirectos)."
+   with st.expander("📘 Nota metodológica importante (Proveedores)"):
+    st.markdown(
+        """
+        <div style="color:#2997FF; font-size:16px; line-height:1.7;">
+        Los valores mostrados corresponden a los coeficientes técnicos
+        directos de la <b>Tabla 12 (DB)</b> publicada por el BCH.
+        Estos coeficientes reflejan exclusivamente los
+        <b>requerimientos directos</b> de insumos intermedios
+        necesarios para generar un lempira de producción en el
+        sector seleccionado, <b>y no constituyen multiplicadores
+        de Leontief</b> (los cuales capturan efectos directos
+        e indirectos).
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
 # ==========================================
