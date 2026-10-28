@@ -216,19 +216,41 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
             st.caption("Interpretación generada por IA; verificá sus afirmaciones con las tablas y notas metodológicas.")
         else:
             st.warning("Gemini no devolvió una interpretación. Intentá nuevamente.")
-    except Exception as error:
+        except Exception as error:
         codigo = getattr(error, "code", None)
-        if codigo == 429:
-            st.warning("Gemini alcanzó su límite de solicitudes o cuota. Intentá más tarde.")
-        elif codigo in (401, 403):
-            st.error("No fue posible autenticar la API de Gemini. Revisá la clave y sus permisos en Streamlit.")
-        elif codigo == 404:
-            st.error("El modelo configurado no está disponible para esta API. Revisá MODELO_GEMINI.")
-        else:
-            st.error(f"No fue posible obtener la interpretación de Gemini ({type(error).__name__}).")
 
-        st.error(f"Diagnóstico HTTP: {codigo}")
-        st.error(f"Detalle técnico: {str(error)[:500]}")
+        if codigo == 503:
+            st.warning(
+                "⚠️ Gemini no está disponible temporalmente. "
+                "El servicio está experimentando una demanda elevada. "
+                "Esperá unos minutos e intentá generar nuevamente "
+                "el análisis económico. "
+                "Los datos y gráficos de MIP-IA continúan disponibles."
+            )
+
+        elif codigo == 429:
+            st.warning(
+                "Gemini alcanzó su límite de solicitudes o cuota. "
+                "Intentá más tarde."
+            )
+
+        elif codigo in (401, 403):
+            st.error(
+                "No fue posible autenticar la API de Gemini. "
+                "Revisá la clave y sus permisos en Streamlit."
+            )
+
+        elif codigo == 404:
+            st.error(
+                "El modelo configurado no está disponible para esta API. "
+                "Revisá MODELO_GEMINI."
+            )
+
+        else:
+            st.error(
+                "No fue posible obtener la interpretación de Gemini. "
+                "Intentá nuevamente más tarde."
+            )
 
 
 # ==========================================
