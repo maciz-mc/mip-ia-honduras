@@ -419,22 +419,7 @@ with tab2:
         ).properties(height=350).interactive()
         
         st.altair_chart(grafico_clie, width="stretch")
-
-    st.markdown("---")
-    st.subheader("💡 Contexto y Advertencia Metodológica (Clientes)")
-
-    st.warning(
-        "⚠️ **Interpretación económica fundamental del análisis por fila:**\n\n"
-        "1. **¿Qué representan estos coeficientes?** Indican la intensidad con la que cada actividad "
-        "compradora utiliza como insumo directo el producto de la actividad proveedora seleccionada por cada lempira "
-        "que dicha actividad compradora produce.\n\n"
-        "2. **¿Qué NO representan?**\n"
-        "   * **No representan participaciones de mercado / ventas:** Los coeficientes técnicos no muestran el porcentaje de ventas de la industria "
-        "proveedora destinadas a cada sector. No indica qué proporción del mercado capta cada comprador.\n"
-        "   * **No sumabilidad:** Sumar verticalmente estos coeficientes no tiene un significado económico directo "
-        "relacionado con la producción agregada o las ventas totales del sector proveedor. Evite la acumulación de coeficientes por fila.\n"
-        "   * **No constituyen multiplicadores:** Tampoco capturan los efectos inducidos o indirectos del modelo de Leontief."
-    )
+    
 
     st.subheader("🤖 Interpretación asistida por Gemini")
 
@@ -457,3 +442,26 @@ with tab2:
                 top_10_clie
         )
 
+st.markdown("---")
+    st.subheader("💡 Contexto y Advertencia Metodológica (Clientes)")
+
+    st.warning(
+        "⚠️ **Interpretación económica fundamental del análisis por fila:**\n\n"
+        "1. **¿Qué representan estos coeficientes?** Indican la intensidad con la que cada actividad "
+        "compradora utiliza como insumo directo el producto de la actividad proveedora seleccionada por cada lempira "
+        "que dicha actividad compradora produce.\n\n"
+        "2. **¿Qué NO representan?**\n"
+        "   * **No representan participaciones de mercado / ventas:** Los coeficientes técnicos no muestran el porcentaje de ventas de la industria "
+        "proveedora destinadas a cada sector. No indica qué proporción del mercado capta cada comprador.\n"
+        "   * **No sumabilidad:** Sumar verticalmente estos coeficientes no tiene un significado económico directo "
+        "relacionado con la producción agregada o las ventas totales del sector proveedor. Evite la acumulación de coeficientes por fila.\n"
+        "   * **No constituyen multiplicadores:** Tampoco capturan los efectos inducidos o indirectos del modelo de Leontief."
+    )
+
+    with st.expander("📘 Notas metodológicas del análisis de Clientes"):
+        st.markdown(
+            "Los coeficientes técnicos muestran los requerimientos "
+            "directos de insumos por unidad de producción de cada "
+            "actividad compradora. No representan participaciones "
+            "de mercado ni multiplicadores de Leontief."
+        )
