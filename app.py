@@ -211,7 +211,7 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
         
         if respuesta.candidates:
             motivo = respuesta.candidates[0].finish_reason
-                st.caption(f"Diagnóstico Gemini: {motivo}")
+            st.caption(f"Diagnóstico Gemini: {motivo}")
         else:
                 motivo = None
 
