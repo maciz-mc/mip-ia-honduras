@@ -7,6 +7,14 @@ from google import genai
 from google.genai import types
 
 st.markdown("""
+/* Tamaño de las pestañas de navegación */
+button[data-baseweb="tab"] {
+    font-size: 19px !important;
+}
+
+button[data-baseweb="tab"] p {
+    font-size: 19px !important;
+}
 <style>
 div.st-key-gemini_proveedores button {
     background-color: #5B3294 !important;
