@@ -206,6 +206,9 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
                 system_instruction=INSTRUCCIONES_GEMINI,
                 temperature=0.2,
                 max_output_tokens=2048,
+                thinking_config=types.ThinkingConfig(
+                    thinking_level="low"
+                ),
             ),
         )
         
@@ -216,21 +219,24 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
                 motivo = None
 
         texto = respuesta.text or ""
-
+        
         if not texto.strip():
-                st.warning("Gemini no devolvió una interpretación. Intentá nuevamente.")
+            st.warning(
+                "Gemini no devolvió una interpretación. "
+                "Los resultados cuantitativos siguen disponibles."
+            )
         elif "MAX_TOKENS" in str(motivo):
-                st.warning(
-                    "Gemini alcanzó el límite de generación. "
-                    "La interpretación podría estar incompleta. "
-                    "Intentá nuevamente."
-                )
+            st.warning(
+                "Gemini alcanzó el límite de generación. "
+                "La interpretación podría estar incompleta."
+            )
+            st.markdown(texto)
         else:
-                st.markdown(texto)
-                st.caption(
-                    "Interpretación generada por IA; verificá sus afirmaciones "
-                    "con las tablas y notas metodológicas."
-                )
+            st.markdown(texto)
+            st.caption(
+                "Interpretación generada por IA; verificá sus afirmaciones "
+                "con las tablas y notas metodológicas."
+            )
 
             
     except Exception as error:
