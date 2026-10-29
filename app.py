@@ -385,7 +385,7 @@ with tab1:
         )
 
     st.subheader("🤖 Interpretación asistida por Gemini")
-        if st.button("✨ Generar análisis económico con IA", type="primary", use_container_width=True, key="gemini_proveedores"):
+    if st.button("✨ Generar análisis económico con IA", type="primary", use_container_width=True, key="gemini_proveedores"):
         with st.spinner("Gemini está interpretando los resultados..."):
             interpretar_con_gemini(
                 "PROVEEDORES", actividad_compradora, top_10_prov,
