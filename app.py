@@ -214,7 +214,6 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
         
         if respuesta.candidates:
             motivo = respuesta.candidates[0].finish_reason
-            st.caption(f"Diagnóstico Gemini: {motivo}")
         else:
                 motivo = None
 
@@ -233,11 +232,7 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
             st.markdown(texto)
         else:
             st.markdown(texto)
-            st.caption(
-                "Interpretación generada por IA; verificá sus afirmaciones "
-                "con las tablas y notas metodológicas."
-            )
-
+           
             
     except Exception as error:
             codigo = getattr(error, "code", None)
