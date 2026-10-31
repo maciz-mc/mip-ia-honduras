@@ -265,15 +265,22 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
             "Los modelos de interpretación no están disponibles "
             "para esta API."
         )
-    elif ultimo_error in ("respuesta_incompleta", "respuesta_vacia"):
-        st.warning(
-            "No fue posible generar una interpretación completa."
-        )
-    else:
-        st.warning(
-            "No fue posible obtener la interpretación de Gemini. "
-            "Los datos y gráficos continúan disponibles."
-        )
+elif ultimo_error == "respuesta_incompleta":
+    st.warning(
+        "PRUEBA DIAGNÓSTICA: Gemini alcanzó el límite "
+        "de tokens antes de completar la interpretación."
+    )
+
+elif ultimo_error == "respuesta_vacia":
+    st.warning(
+        "PRUEBA DIAGNÓSTICA: Gemini devolvió una respuesta "
+        "vacía o sin texto utilizable."
+    )
+else:
+    st.warning(
+        "No fue posible obtener la interpretación de Gemini. "
+        "Los datos y gráficos continúan disponibles."
+    )
 
 
 # ==========================================
