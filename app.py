@@ -201,7 +201,7 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
 
     cliente = genai.Client(api_key=clave_api)
 
-    modelos = [MODELO_GEMINI]
+    modelos = [MODELO_GEMINI, MODELO_RESPALDO]
     ultimo_error = None
 
     for modelo in modelos:
@@ -265,16 +265,9 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
             "Los modelos de interpretación no están disponibles "
             "para esta API."
         )
-    elif ultimo_error == "respuesta_incompleta":
+    elif ultimo_error in ("respuesta_incompleta", "respuesta_vacia"):
         st.warning(
-            "PRUEBA DIAGNÓSTICA: Gemini alcanzó el límite "
-            "de tokens antes de completar la interpretación."
-        )
-    
-    elif ultimo_error == "respuesta_vacia":
-        st.warning(
-            "PRUEBA DIAGNÓSTICA: Gemini devolvió una respuesta "
-            "vacía o sin texto utilizable."
+            "No fue posible generar una interpretación completa."
         )
     else:
         st.warning(
