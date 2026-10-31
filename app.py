@@ -261,10 +261,10 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
             "Intentá nuevamente más tarde."
         )
     elif codigo == 404:
-        st.warning(
-            "Los modelos de interpretación no están disponibles "
-            "para esta API."
-        )
+    st.warning(
+        "Los modelos de interpretación no están disponibles "
+        "para esta API."
+    )
     elif ultimo_error == "respuesta_incompleta":
     st.warning(
         "Gemini no logró completar la interpretación económica. "
