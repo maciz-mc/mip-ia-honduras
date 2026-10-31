@@ -201,7 +201,7 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
 
     cliente = genai.Client(api_key=clave_api)
 
-    modelos = [MODELO_GEMINI, MODELO_RESPALDO]
+    modelos = [MODELO_GEMINI]
     ultimo_error = None
 
     for modelo in modelos:
