@@ -130,7 +130,8 @@ def limpiar_nombre_archivo(nombre):
 # ==========================================
 # INTERPRETACIÓN CON IA (SIN CÁLCULOS EXTERNOS)
 # ==========================================
-MODELO_GEMINI = "gemini-3.6-flash"  # Modelo verificado en Colab; sujeto a disponibilidad de API
+MODELO_GEMINI = "gemini-3.8-flash"
+MODELO_RESPALDO = "gemini-3.5-flash-lite"
 
 
 INSTRUCCIONES_GEMINI = """
@@ -197,78 +198,82 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
     if tipo == "PROVEEDORES" and suma_columna is not None:
         contexto += f"\nSuma de coeficientes de la columna completa: {suma_columna:.6f}"
 
-    try:
-        cliente = genai.Client(api_key=clave_api)
-        respuesta = cliente.models.generate_content(
-            model=MODELO_GEMINI,
-            contents=contexto + "\nExplica la lectura económica de estos resultados.",
-            config=types.GenerateContentConfig(
-                system_instruction=INSTRUCCIONES_GEMINI,
-                temperature=0.2,
-                max_output_tokens=2048,
-                thinking_config=types.ThinkingConfig(
-                    thinking_level="low"
-                ),
-            ),
-        )
-        
-        if respuesta.candidates:
-            motivo = respuesta.candidates[0].finish_reason
-        else:
-                motivo = None
 
-        texto = respuesta.text or ""
-        
-        if not texto.strip():
-            st.warning(
-                "Gemini no devolvió una interpretación. "
-                "Los resultados cuantitativos siguen disponibles."
+    cliente = genai.Client(api_key=clave_api)
+
+    modelos = [MODELO_GEMINI, MODELO_RESPALDO]
+    ultimo_error = None
+
+    for modelo in modelos:
+        try:
+            respuesta = cliente.models.generate_content(
+                model=modelo,
+                contents=contexto + "\nExplica la lectura económica de estos resultados.",
+                config=types.GenerateContentConfig(
+                    system_instruction=INSTRUCCIONES_GEMINI,
+                    temperature=0.2,
+                    max_output_tokens=2048,
+                ),
             )
-        elif "MAX_TOKENS" in str(motivo):
-            st.warning(
-                "Gemini alcanzó el límite de generación. "
-                "La interpretación podría estar incompleta."
+
+            texto = respuesta.text or ""
+            motivo = (
+                respuesta.candidates[0].finish_reason
+                if respuesta.candidates else None
             )
+
+            if not texto.strip():
+                ultimo_error = "respuesta_vacia"
+                continue
+
+            if "MAX_TOKENS" in str(motivo):
+                ultimo_error = "respuesta_incompleta"
+                continue
+
             st.markdown(texto)
-        else:
-            st.markdown(texto)
-           
-            
-    except Exception as error:
+            return
+
+        except Exception as error:
+            ultimo_error = error
             codigo = getattr(error, "code", None)
 
-            if codigo == 503:
-                st.warning(
-                    "⚠️ Gemini no está disponible temporalmente. "
-                    "El servicio está experimentando una demanda elevada. "
-                    "Esperá unos minutos e intentá generar nuevamente "
-                    "el análisis económico. "
-                    "Los datos y gráficos de MIP-IA continúan disponibles."
-                )
+            if codigo in (429, 503, 404):
+                continue
 
-            elif codigo == 429:
-                st.warning(
-                    "Gemini alcanzó su límite de solicitudes o cuota. "
-                    "Intentá más tarde."
-                )
-    
-            elif codigo in (401, 403):
-                st.error(
-                    "No fue posible autenticar la API de Gemini. "
-                    "Revisá la clave y sus permisos en Streamlit."
-                )
-    
-            elif codigo == 404:
-                st.error(
-                    "El modelo configurado no está disponible para esta API. "
-                    "Revisá MODELO_GEMINI."
-                )
+            break
 
-            else:
-                st.error(
-                    "No fue posible obtener la interpretación de Gemini. "
-                    "Intentá nuevamente más tarde."
-                )
+    # Solo se llega aquí si no fue posible obtener una respuesta válida.
+    codigo = getattr(ultimo_error, "code", None)
+
+    if codigo in (401, 403):
+        st.error(
+            "No fue posible autenticar la API de Gemini. "
+            "Revisá la clave y sus permisos en Streamlit."
+        )
+    elif codigo == 429:
+        st.warning(
+            "Gemini alcanzó su límite de solicitudes o cuota. "
+            "Intentá nuevamente más tarde."
+        )
+    elif codigo == 503:
+        st.warning(
+            "Gemini no está disponible temporalmente. "
+            "Intentá nuevamente más tarde."
+        )
+    elif codigo == 404:
+        st.warning(
+            "Los modelos de interpretación no están disponibles "
+            "para esta API."
+        )
+    elif ultimo_error in ("respuesta_incompleta", "respuesta_vacia"):
+        st.warning(
+            "No fue posible generar una interpretación completa."
+        )
+    else:
+        st.warning(
+            "No fue posible obtener la interpretación de Gemini. "
+            "Los datos y gráficos continúan disponibles."
+        )
 
 
 # ==========================================
