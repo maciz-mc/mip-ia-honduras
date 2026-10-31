@@ -131,7 +131,7 @@ def limpiar_nombre_archivo(nombre):
 # INTERPRETACIÓN CON IA (SIN CÁLCULOS EXTERNOS)
 # ==========================================
 MODELO_GEMINI = "gemini-3.6-flash"
-
+MODELO_RESPALDO = "gemini-3.5-flash-lite"
 
 
 INSTRUCCIONES_GEMINI = """
@@ -265,10 +265,12 @@ def interpretar_con_gemini(tipo, actividad, resultados, suma_columna=None):
             "Los modelos de interpretación no están disponibles "
             "para esta API."
         )
-    elif ultimo_error in ("respuesta_incompleta", "respuesta_vacia"):
-        st.warning(
-            "No fue posible generar una interpretación completa."
-        )
+    elif ultimo_error == "respuesta_incompleta":
+    st.warning(
+        "Gemini no logró completar la interpretación económica. "
+        "Intentá generar nuevamente el análisis. "
+        "Los datos y gráficos continúan disponibles."
+    )
     else:
         st.warning(
             "No fue posible obtener la interpretación de Gemini. "
