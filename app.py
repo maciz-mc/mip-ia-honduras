@@ -131,7 +131,7 @@ def limpiar_nombre_archivo(nombre):
 # INTERPRETACIÓN CON IA (SIN CÁLCULOS EXTERNOS)
 # ==========================================
 MODELO_GEMINI = "gemini-3.6-flash"
-MODELO_RESPALDO = "gemini-3.9-flash-lite"
+MODELO_RESPALDO = "gemini-3.5-flash-lite"
 
 
 INSTRUCCIONES_GEMINI = """
