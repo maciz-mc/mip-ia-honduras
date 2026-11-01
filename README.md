@@ -163,9 +163,10 @@ Las decisiones metodológicas, la validación económica y la aceptación de los
 
 Las pruebas se realizaron sobre la aplicación publicada en Streamlit, utilizando diferentes actividades económicas y consultas de interpretación.
 
+
 | Quién la probó | Qué probó | Qué pasó | Qué cambié |
 |---|---|---|---|
-| Profesor Lucas Fernández | Revisión de MIP-IA durante el debate del hito, 20/10/2026 | Confirmó el funcionamiento con datos del BCH y recomendó ordenar las barras conforme a la tabla y mejorar las explicaciones económicas mediante IA | Se corrigió el orden de las barras y se mejoraron las instrucciones de Gemini para generar interpretaciones en lenguaje sencillo |
+| Profesor Lucas Fernández Aragón | Versión inicial de MIP-IA presentada en el debate del hito, 20/10/2026, todavía sin integración de IA | Confirmó el funcionamiento con datos del BCH y la claridad de la tabla de requerimientos. Recomendó ordenar las barras conforme a la tabla y sugirió que la futura integración de Gemini explicara las relaciones económicas en lenguaje llano | Se corrigió el orden de las barras y, en una fase posterior, se incorporó Gemini con instrucciones para generar interpretaciones económicas comprensibles |
 | Responsable del proyecto | Exploración de proveedores directos | Se obtuvieron tablas, gráficos y coeficientes para las actividades seleccionadas | Se revisó la presentación y organización de resultados |
 | Responsable del proyecto | Exploración de clientes directos | El módulo identificó actividades usuarias y sus coeficientes | Se revisaron etiquetas, gráficos y notas metodológicas |
 | Responsable del proyecto | Interpretación económica con Gemini | Se generaron explicaciones en español utilizando los resultados calculados | Se ajustaron instrucciones y presentación de respuestas |
