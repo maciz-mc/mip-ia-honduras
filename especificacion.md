@@ -103,4 +103,177 @@ La inteligencia artificial desempeña una función interpretativa y no sustituye
 
 La aplicación dispone de dos modelos configurados:
 
-- **Modelo principal:** `gemini
+- **Modelo principal:** `gemini-3.6-flash`.
+- **Modelo de respaldo:** `gemini-3.5-flash-lite`.
+
+Sus identificadores se administran mediante las constantes `MODELO_GEMINI` y `MODELO_RESPALDO` de `app.py`.
+
+### 4.3. Información proporcionada a Gemini
+
+El sistema envía la información necesaria para interpretar el análisis seleccionado:
+
+- Nombre de la actividad económica.
+- Tipo de análisis: Proveedores o Clientes.
+- Diez principales coeficientes técnicos directos.
+- Suma de coeficientes de la columna completa, cuando corresponde al módulo de proveedores.
+- Instrucciones metodológicas que delimitan el alcance de la interpretación.
+
+### 4.4. Restricciones de la IA
+
+Gemini debe:
+
+- Utilizar exclusivamente los resultados suministrados por la aplicación.
+- Respetar los valores numéricos calculados.
+- Diferenciar relaciones directas de efectos indirectos.
+- Evitar afirmaciones causales no sustentadas.
+- No inventar actividades, coeficientes ni resultados.
+- Reconocer las limitaciones de la información disponible.
+
+Las respuestas generadas constituyen interpretaciones asistidas por inteligencia artificial y no resultados estadísticos adicionales.
+
+### 4.5. Mecanismo automático de respaldo
+
+La aplicación solicita inicialmente la interpretación al modelo principal.
+
+Si este no produce una respuesta válida, el sistema intenta obtenerla mediante el modelo de respaldo.
+
+Entre las situaciones contempladas se encuentran:
+
+- Respuestas vacías.
+- Respuestas incompletas por límite de generación.
+- Errores de cuota o límite de solicitudes (429).
+- Indisponibilidad del modelo solicitado (404).
+- Indisponibilidad temporal del servicio (503).
+
+Los errores de autenticación (401 y 403) se gestionan mediante mensajes específicos.
+
+Si no se obtiene una respuesta válida, la aplicación informa al usuario sin interrumpir los módulos cuantitativos.
+
+El mecanismo de respaldo mejora la continuidad operativa, pero no garantiza disponibilidad permanente ni elimina las restricciones de uso de la API.
+
+### 4.6. Seguridad de credenciales
+
+La clave `GEMINI_API_KEY` se administra mediante los secretos de Streamlit.
+
+No debe incorporarse al código fuente, al repositorio público ni a los documentos de entrega.
+
+## 5. Flujo del usuario
+
+1. El usuario ingresa a HN MIP-IA mediante su dirección pública en Streamlit.
+2. La aplicación carga y valida la matriz de coeficientes técnicos.
+3. El usuario selecciona el módulo Proveedores directos o Clientes directos.
+4. Selecciona una actividad económica.
+5. Python procesa la columna o fila correspondiente y obtiene los resultados.
+6. La aplicación presenta las tablas y visualizaciones.
+7. Opcionalmente, el usuario solicita una interpretación con Gemini.
+8. El sistema consulta el modelo principal y, cuando corresponde, intenta utilizar el modelo de respaldo.
+9. El usuario recibe la interpretación o un mensaje comprensible si no fue posible generarla.
+10. El usuario puede descargar los resultados cuantitativos en CSV.
+
+La exploración cuantitativa permanece disponible aunque el servicio de Gemini presente errores o interrupciones.
+
+## 6. Restricciones
+
+### Restricciones técnicas
+
+- Utilizar Python y bibliotecas compatibles con Streamlit Community Cloud.
+- Mantener la matriz de datos dentro del repositorio del proyecto.
+- Verificar que la matriz contenga 95 filas y 95 columnas, con valores numéricos válidos y finitos.
+- Verificar la correspondencia de nombres y orden entre filas y columnas.
+- No incorporar claves API directamente en el código fuente.
+- Utilizar los secretos de Streamlit para gestionar las credenciales de Gemini.
+- Gestionar los errores de conexión, autenticación y generación sin interrumpir los módulos cuantitativos.
+- Conservar el mecanismo automático de respaldo entre modelos, salvo modificación expresamente autorizada.
+
+### Restricciones metodológicas
+
+- Utilizar exclusivamente la matriz de coeficientes técnicos del BCH correspondiente a 2013.
+- Conservar la orientación correcta de filas y columnas de la matriz.
+- Distinguir la intensidad de utilización de insumos de los valores monetarios de las transacciones.
+- No presentar coeficientes técnicos como multiplicadores económicos.
+- No inferir relaciones causales a partir de asociaciones matriciales.
+- Realizar los cálculos económicos mediante Python, no mediante Gemini.
+
+### Restricciones de alcance
+
+HN MIP-IA constituye una iniciativa personal de investigación, aprendizaje y experimentación tecnológica, orientada a profundizar conocimientos en programación, inteligencia artificial y análisis de la estructura productiva de Honduras.
+
+Su desarrollo tiene fines académicos y de perfeccionamiento profesional.
+
+La aplicación es educativa y exploratoria. No pretende sustituir un estudio económico sectorial completo ni producir recomendaciones automáticas de política económica.
+
+## 7. Criterios de aceptación
+
+Se considerará satisfactoria la versión académica cuando se verifique que:
+
+1. La aplicación se ejecuta correctamente mediante su enlace público.
+2. La matriz de 95 × 95 actividades se carga y valida.
+3. El usuario puede seleccionar cualquiera de las 95 actividades económicas.
+4. El módulo de proveedores identifica correctamente los diez mayores coeficientes técnicos de la actividad compradora seleccionada.
+5. El módulo de clientes identifica correctamente las diez principales actividades usuarias según los coeficientes de la fila seleccionada.
+6. Las tablas y gráficos representan fielmente los valores calculados.
+7. Los archivos CSV descargados contienen los resultados correspondientes al análisis seleccionado.
+8. Gemini genera interpretaciones a partir de los resultados calculados, sin alterar los valores.
+9. El sistema intenta utilizar el modelo de respaldo cuando el principal no produce una respuesta válida.
+10. La aplicación continúa funcionando en sus módulos cuantitativos cuando Gemini no está disponible.
+11. Los mensajes de error son comprensibles y no exponen información técnica interna innecesaria.
+12. No se publican claves API ni otras credenciales privadas en GitHub.
+13. La documentación permite comprender, ejecutar y verificar el funcionamiento del producto.
+
+### Pruebas realizadas
+
+Durante el desarrollo se efectuaron pruebas de los módulos de proveedores y clientes, de la generación de interpretaciones y de la recuperación mediante el modelo alternativo.
+
+En particular, se verificó el mecanismo de respaldo mediante la configuración temporal de un identificador inexistente para el modelo principal, obteniéndose una interpretación a través del modelo alternativo.
+
+También se identificaron respuestas incompletas por límites de generación, lo que motivó ajustes en el tratamiento de errores.
+
+Las pruebas realizadas no equivalen a una garantía de disponibilidad permanente de los servicios externos de Gemini.
+
+## 8. Fuera de alcance
+
+Para esta versión académica se excluyen expresamente:
+
+- Comparación intersectorial entre dos actividades.
+- Cálculo de la inversa de Leontief.
+- Multiplicadores de producción, ingreso o empleo.
+- Encadenamientos productivos indirectos y totales.
+- Modelos de programación lineal.
+- Optimización de la estructura productiva.
+- Simulaciones de política económica.
+- Incorporación de matrices de otros años.
+- Actualización automática de estadísticas económicas.
+- Predicciones económicas generadas mediante IA.
+
+Estas funcionalidades podrán evaluarse como posibles ampliaciones de la iniciativa personal de investigación y aprendizaje, mediante una revisión metodológica y técnica específica.
+
+## 9. Despliegue
+
+### Plataforma
+
+Streamlit Community Cloud.
+
+### Repositorio
+
+https://github.com/maciz-mc/mip-ia-honduras
+
+### Aplicación publicada
+
+https://mip-ia-honduras.streamlit.app/
+
+### Componentes principales
+
+- `app.py`: aplicación principal.
+- `requirements.txt`: dependencias de Python.
+- `README.md`: documentación del proyecto.
+- `especificacion.md`: especificación técnica del producto.
+- `AGENTS.md`: instrucciones para asistentes de programación.
+- `data/`: archivos de datos utilizados por la aplicación.
+
+### Mantenimiento
+
+El desarrollo se realizará de manera incremental, preservando las funcionalidades previamente verificadas.
+
+Cada modificación deberá probarse antes de considerarse parte de una nueva versión estable.
+
+Los cambios en modelos de IA, metodología económica, estructura de datos o arquitectura de la aplicación requieren revisión y autorización del responsable del proyecto.
