@@ -220,6 +220,10 @@ Las capturas no deben mostrar credenciales privadas.
 
 ## Alcance posterior al reto
 
+HN MIP-IA forma parte de una iniciativa personal de investigación y desarrollo de herramientas de análisis económico, motivada por el interés de profundizar conocimientos en programación, inteligencia artificial y modelización de la estructura productiva de Honduras.
+
+El proyecto constituye un ejercicio de aprendizaje, experimentación y perfeccionamiento profesional, desarrollado de manera independiente y con fines académicos.
+
 La versión académica actual se concentra en la exploración de relaciones intersectoriales directas.
 
 Entre las posibles ampliaciones futuras se encuentran:
