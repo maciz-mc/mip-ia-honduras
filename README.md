@@ -165,6 +165,7 @@ Las pruebas se realizaron sobre la aplicación publicada en Streamlit, utilizand
 
 | Quién la probó | Qué probó | Qué pasó | Qué cambié |
 |---|---|---|---|
+| Profesor Lucas Fernández | Revisión de MIP-IA durante el debate del hito, 20/10/2026 | Confirmó el funcionamiento con datos del BCH y recomendó ordenar las barras conforme a la tabla y mejorar las explicaciones económicas mediante IA | Se corrigió el orden de las barras y se mejoraron las instrucciones de Gemini para generar interpretaciones en lenguaje sencillo |
 | Responsable del proyecto | Exploración de proveedores directos | Se obtuvieron tablas, gráficos y coeficientes para las actividades seleccionadas | Se revisó la presentación y organización de resultados |
 | Responsable del proyecto | Exploración de clientes directos | El módulo identificó actividades usuarias y sus coeficientes | Se revisaron etiquetas, gráficos y notas metodológicas |
 | Responsable del proyecto | Interpretación económica con Gemini | Se generaron explicaciones en español utilizando los resultados calculados | Se ajustaron instrucciones y presentación de respuestas |
