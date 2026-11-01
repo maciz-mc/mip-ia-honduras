@@ -139,8 +139,10 @@ Las pruebas deben realizarse sin exponer claves privadas y sin introducir modifi
 
 ## Alcance futuro
 
-Después de concluir los cuatro documentos del estudio de optimización macroeconómica de Honduras, podrá evaluarse una ampliación analítica.
+HN MIP-IA forma parte de una iniciativa personal de investigación y desarrollo de herramientas de análisis económico, motivada por el interés de profundizar conocimientos en programación, inteligencia artificial y modelización de la estructura productiva de Honduras.
 
-Entre las posibles funcionalidades futuras se encuentran la comparación intersectorial, los multiplicadores de Leontief, los encadenamientos indirectos y los modelos de simulación y optimización.
+El proyecto constituye un ejercicio de aprendizaje, experimentación y perfeccionamiento profesional, desarrollado de manera independiente y con fines académicos.
 
-**Estas ampliaciones no forman parte del reto académico actual** y requieren una nueva revisión de la especificación antes de desarrollarse.
+En etapas posteriores podrán explorarse funcionalidades adicionales, como la comparación intersectorial, los multiplicadores de Leontief, el análisis de encadenamientos productivos y los modelos de simulación y optimización económica.
+
+Estas posibles ampliaciones no forman parte del alcance de la versión académica actual y requerirán una revisión de la especificación antes de su implementación.
